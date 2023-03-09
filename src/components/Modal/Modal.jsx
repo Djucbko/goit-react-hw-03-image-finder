@@ -1,37 +1,42 @@
-import React from 'react';
-import css from './Modal.module.css';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
+import s from './Modal.module.css';
 
-class Modal extends React.Component {
-  render() {
-    return (
-      <div id="modal" onClick={this.props.onClickClose} className={css.Overlay}>
-        <div className={css.Modal}>
-          <img className={css.Largeimg} src={this.props.largeImageUrl} alt="" />
-        </div>
-      </div>
-    );
-  }
+export default class Modal extends Component {
+    static propTypes = {
+        url: PropTypes.string.isRequired,
+        onClose: PropTypes.func.isRequired,
+    };
 
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyPress);
-  }
+    state = {}
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyPress);
-  }
-
-  handleKeyPress = event => {
-    if (event.keyCode === 27) {
-      this.props.onClose();
+    componentDidMount() {
+        window.addEventListener('keydown', this.clickEsc);
     }
-  };
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.clickEsc);
+    }
+
+    clickBackdrop = event => {
+        if (event.target === event.currentTarget) {
+            this.props.onClose();
+        }
+    }
+
+    clickEsc = event => {
+        if (event.code === 'Escape') {
+            this.props.onClose();
+        }
+    }
+
+
+    render() {
+        return (
+            <div className={s.overlay} onClick={this.clickBackdrop}>
+                <div className={s.modal}>
+                    <img src={this.props.url} alt="" />
+                </div>
+            </div>
+        )
+    }
 }
-
-Modal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  onClickClose: PropTypes.func.isRequired,
-  largeImageUrl: PropTypes.string.isRequired,
-};
-
-export default Modal;

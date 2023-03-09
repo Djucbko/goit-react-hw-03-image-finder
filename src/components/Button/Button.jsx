@@ -1,19 +1,14 @@
-import React from 'react';
+import s from './Button.module.css';
 import PropTypes from 'prop-types';
-import css from './Button.module.css';
 
-class Button extends React.Component {
-  render() {
-    return (
-      <button onClick={this.props.getMoreImage} className={css.button}>
-        Load more
-      </button>
-    );
-  }
+export default function Button({ onClick }) {
+  return (
+    <button type="button" className={s.button} onClick={onClick}>
+      Load more
+    </button>
+  );
 }
 
 Button.propTypes = {
-  getMoreImage: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
-
-export default Button;
