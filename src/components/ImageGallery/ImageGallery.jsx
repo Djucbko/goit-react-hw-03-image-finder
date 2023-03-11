@@ -15,46 +15,36 @@ export default class ImageGallery extends Component {
   state = {
     images: [],
     status: 'idle',
+    totalHits: 0,
+    showButton: false,
+    totalImages: 0,
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.inputValue !== this.props.inputValue) {
-      this.fetchLoad();
-    }
-    if (prevProps.page !== this.props.page && this.props.page > 1) {
-      this.fetchLoadMore();
+    if (prevProps.inputValue !== this.props.inputValue || prevProps.page !== this.props.page) {
+     
+      getImages(this.props.inputValue, this.props.page, this.props.images)
+
+        .then (response => this.setState(prevState => (
+           {
+         images:  [...prevState.images, ...response.hits],
+         totalHits: response.totalHits,
+           status: 'resolve',
+            showButton: this.props.page === Math.ceil(this.state.totalHits / 12),
+           totalImages: response.totalHits,
+         }))
+        )  
+          
+      .catch(error => this.setState({ status: 'rejected' }))
+      
     }
   }
 
-  fetchLoad = () => {
-    const { inputValue, page } = this.props;
-
-    getImages(inputValue, page)
-      .then(response => {
-        this.setState({
-          images: response.hits,
-          status: 'resolve',
-        });
-      })
-      .catch(error => this.setState({ status: 'rejected' }));
-  };
-
-  fetchLoadMore = () => {
-    const { inputValue, page } = this.props;
-
-    getImages(inputValue, page)
-      .then(response => {
-        this.setState(prevState => ({
-          images: [...prevState.images, ...response.hits],
-          status: 'resolve',
-        }));
-      })
-      .catch(error => this.setState({ status: 'rejected' }));
-  };
+  
 
   render() {
-    const { images, status } = this.state;
-
+    const { images, status, showButton } = this.state;
+    
     if (status === 'pending') {
       return <Loader />;
     }
@@ -72,13 +62,17 @@ export default class ImageGallery extends Component {
               />
             ))}
           </ul>
-          {this.state.images.length !== 0 ? (
+          {!showButton &&(
             <Button onClick={this.props.loadMoreBtn} />
-          ) : (
-            alert('No results')
-          )}
+          )
+          }
         </>
+        
       );
     }
-  }
+    
 }
+}
+
+
+

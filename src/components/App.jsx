@@ -13,7 +13,7 @@ class App extends Component {
   }
 
   getInputValue = handleValue => {
-    this.setState({ inputValue: handleValue, page: 1 })
+    this.setState({ inputValue: handleValue, page: 1, })
   }
 
   toggleModal = () => {
@@ -38,7 +38,7 @@ class App extends Component {
     return (
       <>
         <Searchbar getInputValue={this.getInputValue}/>
-        <ImageGallery inputValue={this.state.inputValue} onClick={this.getLargeImg} loadMoreBtn={this.loadMoreBtn} page={ page}/>
+        <ImageGallery inputValue={this.state.inputValue} onClick={this.getLargeImg} loadMoreBtn={this.loadMoreBtn} page={page} />
         {showModal && <Modal url={modalImg} onClose={this.toggleModal} />}
       </>
     )
