@@ -22,8 +22,8 @@ export default class ImageGallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.inputValue !== this.props.inputValue || prevProps.page !== this.props.page) {
-     
-      getImages(this.props.inputValue, this.props.page, this.props.images)
+      this.setState({ status: 'pending' });
+      getImages(this.props.inputValue, this.props.page)
 
         .then (response => this.setState(prevState => (
            {
@@ -49,29 +49,25 @@ export default class ImageGallery extends Component {
       return <Loader />;
     }
 
-    if (status === 'resolve') {
+    if (images.length > 0) {
       return (
-        <>
-          <ul className={s.gallery}>
-            {images.map(({ id, largeImageURL, tags }) => (
-              <ImageGalleryItem
-                key={id}
-                url={largeImageURL}
-                tags={tags}
-                onClick={this.props.onClick}
-              />
-            ))}
-          </ul>
-          {!showButton &&(
-            <Button onClick={this.props.loadMoreBtn} />
-          )
-          }
-        </>
-        
+        <ul className={s.gallery}>
+          {images.map(({ id, largeImageURL, tags }) => (
+            <ImageGalleryItem
+              key={id}
+              url={largeImageURL}
+              tags={tags}
+              onClick={this.props.onClick}
+            />
+          ))}
+        </ul>
       );
     }
-    
-}
+
+    if (status === "resolve" && !showButton) {
+      return <Button onClick={this.props.loadMoreBtn} />;
+    }
+  }
 }
 
 
