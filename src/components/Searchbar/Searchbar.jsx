@@ -1,41 +1,59 @@
 import { Component } from 'react';
-import s from './Searchbar.module.css';
+import PropTypes from 'prop-types';
+import { ImSearch } from 'react-icons/im';
+import toast from 'react-hot-toast';
+import {
+  SearchingBar,
+  SearchForm,
+  SearchFormButton,
+  SearchFormInput,
+} from './Searchbar.styled';
 
 export default class Searchbar extends Component {
   state = {
-    input: '',
+    request: '',
   };
 
-  search = e => {
-    e.preventDefault();
-    this.props.getInputValue(this.state.input);
-    this.setState({ input: '' });
+  handleRequestChange = evt => {
+    this.setState({ request: evt.currentTarget.value.toLowerCase() });
   };
 
-  handleChange = e => {
-    this.setState({ input: e.target.value });
+  handleSubmit = evt => {
+    evt.preventDefault();
+
+    if (this.state.request.trim() === '') {
+      return toast.error('Write your request!');
+    }
+
+    this.props.onSubmit(this.state.request);
+
+    this.setState({ request: '' });
+    evt.target.reset();
   };
 
   render() {
     return (
-      <header className={s.searchbar}>
-        <form className={s.form} onSubmit={this.search}>
-          <button type="submit" className={s.button}>
-            <span className={s.label}>Search</span>
-          </button>
+      <SearchingBar>
+        <SearchForm className="form" onSubmit={this.handleSubmit}>
+          <SearchFormButton type="submit" className="button">
+            <ImSearch />
+          </SearchFormButton>
 
-          <input
-            name="input"
+          <SearchFormInput
+            className="input"
             type="text"
             autoComplete="off"
-            onChange={this.handleChange}
-            value={this.state.input}
             autoFocus
             placeholder="Search images and photos"
-            className={s.input}
+            value={this.state.request}
+            onChange={this.handleRequestChange}
           />
-        </form>
-      </header>
+        </SearchForm>
+      </SearchingBar>
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
