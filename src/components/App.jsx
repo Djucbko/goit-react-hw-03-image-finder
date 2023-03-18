@@ -14,32 +14,35 @@ export default class App extends Component {
     page: 1,
     total: 0,
     results: [],
-    error: null,
+    //error: null,
   };
 
   async componentDidUpdate(_, prevState) {
-    try {
-      if (
-        prevState.page !== this.state.page ||
-        prevState.query !== this.state.query
-      ) {
-        const data = await addImage(this.state.query, this.state.page);
+    const { page, query } = this.state;
+    if (prevState.page !== page || prevState.query !== query) {
+    
+      this.setState({ isLoading: true, error: null });
+      try {
+        const data = await addImage(query, page);
         if (data.hits.length === 0) {
-          toast.error(`No results for ${this.state.query}`);
-          this.setState({ isLoading: false });
+          toast.error(`No results for ${query}`);
           return;
         }
         this.setState(prevState => ({
           results: [...prevState.results, ...data.hits],
           total: data.totalHits,
         }));
+      } catch (error) {
+        toast.error('Something went wrong');
+        //this.setState({ error: 'Something went wrong' });
+      } finally {
+        this.setState({ isLoading: false });
       }
-    } catch (error) {
+    }
+    if (prevState.error) {
       toast.error('Something went wrong');
-      this.setState({ error });
     }
   }
-
   handleFormSubmit = query => {
     this.setState({
       query,

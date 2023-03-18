@@ -18,6 +18,6 @@ export const addImage = async (value, page) => {
 
     return response.data;
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   }
 };
